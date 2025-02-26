@@ -131,14 +131,14 @@ def clean_data(df):
 # Function to load and clean data
 @st.cache_data
 def load_and_clean_data():
-    df = load_data("Food Reviews 100k.csv") # Test performance with different numbers of entries
+    df = load_data("Food Reviews 10k.csv") # Test performance with different numbers of entries
     df = clean_data(df)
     return df
 
 df = load_and_clean_data()
 
 # Print out example product IDs to test with
-print(df["product_id"].value_counts().head(10))
+print(df["product_id"].value_counts().head(3))
 
 # Function to assign positive, neutral or negative sentiment to a review
 def assign_sentiment(score):
