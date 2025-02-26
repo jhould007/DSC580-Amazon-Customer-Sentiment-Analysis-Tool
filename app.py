@@ -268,12 +268,12 @@ st.write("Explore product reviews and gain insights.")
 st.sidebar.header("Product Selection")
 
 # Get product ID from user
-test_product_id = "B001EO5QW8"
+test_product_id = "B001RVFEP2"
 product_id = st.sidebar.text_input("Enter Product ID Below, Then Click \"Analyze Product\".", test_product_id)
 #product_id = st.sidebar.text_input("Enter Product ID:")
 
 # Provide example product IDs
-st.sidebar.write("Example Product IDs: B001EO5QW8, B001RVFEP2, B000VK8AVK")
+st.sidebar.write("Example Product IDs: B001RVFEP2, B000VK8AVK")
 
 # --- Main Content Area ---
 if st.sidebar.button("Analyze Product"):
