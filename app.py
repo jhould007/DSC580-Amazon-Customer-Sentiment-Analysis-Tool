@@ -259,17 +259,18 @@ def print_product_stats(product_id):
 # ___________________________________________________________________________________________
 
 import streamlit as st
-import pandas as pd
 
 # --- Streamlit Layout ---
-st.title("Product Review Analysis")
+st.title("Amazon Customer Sentiment Analysis Tool (ACSAT)")
 st.write("Explore product reviews and gain insights.")
 
 # --- Sidebar Controls ---
 st.sidebar.header("Product Selection")
-#test_product_id = "B001EO5QW8"
-#product_id = st.sidebar.text_input("Enter Product ID:", test_product_id) # Default ID
-product_id = st.sidebar.text_input("Enter Product ID:")
+
+# Get product ID from user
+test_product_id = "B001EO5QW8"
+product_id = st.sidebar.text_input("Enter Product ID Below, Then Click \"Analyze Product\"", test_product_id)
+#product_id = st.sidebar.text_input("Enter Product ID:")
 
 # --- Main Content Area ---
 if st.sidebar.button("Analyze Product"):
