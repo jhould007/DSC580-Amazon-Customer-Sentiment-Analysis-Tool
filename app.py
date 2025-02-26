@@ -188,13 +188,13 @@ def get_product_stats(product_id):
         return None
 
     # Calculate key metrics
-    average_sentiment = product_df['sentiment'].mean()
-    average_star_rating = product_df['score'].mean()
+    average_sentiment = round(product_df['sentiment'].mean(), 2)
+    average_star_rating = round(product_df['score'].mean(), 2)
     review_count = len(product_df)
     
     # Calculate percentage of 5-star reviews
     num_five_star_reviews = len(product_df[product_df['score'] == 5])
-    percentage_five_star = (num_five_star_reviews / review_count) * 100
+    percentage_five_star = round((num_five_star_reviews / review_count) * 100, 2)
     
     # Topic Modeling
     product_reviews_tfidf = tfidf_vectorizer.transform(product_df['review_text'])
@@ -269,13 +269,17 @@ st.sidebar.header("Product Selection")
 
 # Get product ID from user
 test_product_id = "B001EO5QW8"
-product_id = st.sidebar.text_input("Enter Product ID Below, Then Click \"Analyze Product\"", test_product_id)
+product_id = st.sidebar.text_input("Enter Product ID Below, Then Click \"Analyze Product\".", test_product_id)
 #product_id = st.sidebar.text_input("Enter Product ID:")
+
+# Provide example product IDs
+st.sidebar.write("Example Product IDs: B001EO5QW8, B001RVFEP2, B000VK8AVK")
 
 # --- Main Content Area ---
 if st.sidebar.button("Analyze Product"):
     if product_id:  # Check if product_id is not empty
-        st.header(f"Analysis for Product: {product_id}")
+        st.header(f"Analysis for Product \" {product_id} \"")
+        st.write("Sentiment values used to calculate average sentiment are -1 for negative, 0 for neutral, and 0 for positive.")
 
         # Get product stats and write them to the screen
         product_stats = get_product_stats(product_id)
