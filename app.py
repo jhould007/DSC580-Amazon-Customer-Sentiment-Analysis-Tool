@@ -138,7 +138,7 @@ def load_and_clean_data():
 df = load_and_clean_data()
 
 # Print out example product IDs to test with
-print(df["product_id"].value_counts().head(3))
+print(df["product_id"].value_counts().head(10))
 
 # Function to assign positive, neutral or negative sentiment to a review
 def assign_sentiment(score):
@@ -253,7 +253,43 @@ def print_product_stats(product_id):
         print(f"Percentage of 5-Star Reviews: {product_stats['percentage_five_star']:.1f}% \n")
         print(f"Key Themes: {product_stats['key_themes']}")
     else:
-        print("No data available for the selected product.")    
+        print("No data available for the selected product.")
+        
+# Function to get the worst-reviewed products
+def get_worst_products(df):
+    # Find all products with a 2-star average or lower
+    worst_products = df.groupby("product_id")["score"].mean().to_frame().reset_index()
+    worst_products.columns = ["product_id", "avg_rating"] # Rename columns
+    worst_products = worst_products[worst_products["avg_rating"] <= 2]
+    return worst_products
+
+# Function to get reviews for the worst-reviewed products
+def get_worst_product_reviews(worst_products):
+    
+    # Find all reviews for any of the worst products
+    worst_reviews_df = df[df['product_id'].isin(worst_products['product_id'])]
+    
+    # Create a combined column to get keywords from both the title and text
+    worst_reviews_df = df[df['product_id'].isin(worst_products['product_id'])].copy()
+    worst_reviews_df["combined_text"] = worst_reviews_df["review_title"].fillna("") + " " + worst_reviews_df["review_text"].fillna("")
+    worst_reviews_df = worst_reviews_df[["product_id", "score", "combined_text"]]
+    
+def get_topics_and_top_words(model, vectorizer, top_words=10):
+
+    # Extract topics and top words from the LDA model
+    topics_list = []
+    for i, topic in enumerate(model.components_):
+        top_word_indices = topic.argsort()[-top_words:][::-1]
+        top_words_list = [vectorizer.get_feature_names_out()[j] for j in top_word_indices]
+        topic_string = f"Topic {i+1}: " + " ".join(top_words_list)
+        topics_list.append(topic_string)
+    return topics_list
+
+# Get extracted topics as a list of strings
+
+worst_products = get_worst_products(df)
+worst_product_reviews = get_worst_product_reviews(worst_products)
+worst_product_topics = get_topics_and_top_words(lda_model, tfidf_vectorizer)
 
 # PART 3: STREAMLIT APP
 # ___________________________________________________________________________________________
@@ -273,12 +309,12 @@ product_id = st.sidebar.text_input("Enter Product ID Below, Then Click \"Analyze
 #product_id = st.sidebar.text_input("Enter Product ID:")
 
 # Provide example product IDs
-st.sidebar.write("Example Product IDs: B001RVFEP2, B000VK8AVK")
+st.sidebar.write("Example Product IDs: B001RVFEP2, B000VK8AVK, B000PDWBKO, B001EO5Q64, B002QWP89S.")
 
 # --- Main Content Area ---
 if st.sidebar.button("Analyze Product"):
     if product_id:  # Check if product_id is not empty
-        st.header(f"Analysis for Product \" {product_id} \"")
+        st.header(f"Analysis for Product \"{product_id}\"")
         st.write("Sentiment values used to calculate average sentiment are -1 for negative, 0 for neutral, and 0 for positive.")
 
         # Get product stats and write them to the screen
@@ -296,6 +332,15 @@ if st.sidebar.button("Analyze Product"):
             st.write("Product not found.")
     else:
         st.warning("Please enter a product ID.")
+        
+# Report generation area (in progress)
+st.markdown("---")
+st.header("Report Generation")
+st.write("Generate a report for a specific product.")
+#st.button("Generate Report")
+
+if st.button("Generate Report"):
+    st.write("Report generation coming soon...")
 
 # --- Footer ---
 st.markdown("---")
