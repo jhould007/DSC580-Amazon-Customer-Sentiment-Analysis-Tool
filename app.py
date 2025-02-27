@@ -12,6 +12,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 
 # PART 1: DATA CLEANING
+# ___________________________________________________________________________________________
 
 # Function to load dataset
 def load_data(filename):
@@ -257,6 +258,7 @@ def print_product_stats(product_id):
         
 # Function to get the worst-reviewed products
 def get_worst_products(df):
+    
     # Find all products with a 2-star average or lower
     worst_products = df.groupby("product_id")["score"].mean().to_frame().reset_index()
     worst_products.columns = ["product_id", "avg_rating"] # Rename columns
@@ -352,7 +354,6 @@ st.write(worst_product_topics)
 st.markdown("---")
 st.header("Report Generation")
 st.markdown("##### Generate a report for a specific product.")
-#st.button("Generate Report")
 
 if st.button("Generate Report"):
     st.write("Report generation coming soon...")
