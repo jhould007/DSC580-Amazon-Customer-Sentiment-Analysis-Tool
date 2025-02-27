@@ -260,7 +260,8 @@ def get_worst_products(df):
     # Find all products with a 2-star average or lower
     worst_products = df.groupby("product_id")["score"].mean().to_frame().reset_index()
     worst_products.columns = ["product_id", "avg_rating"] # Rename columns
-    worst_products = worst_products[worst_products["avg_rating"] <= 2]
+    worst_products = worst_products[worst_products["avg_rating"] <= 2] # Filter to products with avg rating <= 2 stars
+    worst_products = worst_products.sort_values("avg_rating", ascending=True) # Sort by avg rating
     return worst_products
 
 # Function to get reviews for the worst-reviewed products
@@ -285,8 +286,7 @@ def get_topics_and_top_words(model, vectorizer, top_words=10):
         topics_list.append(topic_string)
     return topics_list
 
-# Get extracted topics as a list of strings
-
+# Get worst products, reviews, and topics
 worst_products = get_worst_products(df)
 worst_product_reviews = get_worst_product_reviews(worst_products)
 worst_product_topics = get_topics_and_top_words(lda_model, tfidf_vectorizer)
@@ -298,7 +298,8 @@ import streamlit as st
 
 # --- Streamlit Layout ---
 st.title("Amazon Customer Sentiment Analysis Tool (ACSAT)")
-st.write("Explore product reviews and gain insights.")
+st.markdown("##### Explore product reviews and gain insights.")
+st.markdown("---")
 
 # --- Sidebar Controls ---
 st.sidebar.header("Product Selection")
@@ -306,15 +307,17 @@ st.sidebar.header("Product Selection")
 # Get product ID from user
 test_product_id = "B001RVFEP2"
 product_id = st.sidebar.text_input("Enter Product ID Below, Then Click \"Analyze Product\".", test_product_id)
-#product_id = st.sidebar.text_input("Enter Product ID:")
 
 # Provide example product IDs
 st.sidebar.write("Example Product IDs: B001RVFEP2, B000VK8AVK, B000PDWBKO, B001EO5Q64, B002QWP89S.")
 
+st.header("Individual Product Analysis")
+st.markdown("##### Analyze a specific product's reviews and key themes.")
+
 # --- Main Content Area ---
 if st.sidebar.button("Analyze Product"):
     if product_id:  # Check if product_id is not empty
-        st.header(f"Analysis for Product \"{product_id}\"")
+        st.write(f"Selected Product ID: \"{product_id}\"")
         st.write("Sentiment values used to calculate average sentiment are -1 for negative, 0 for neutral, and 0 for positive.")
 
         # Get product stats and write them to the screen
@@ -333,10 +336,22 @@ if st.sidebar.button("Analyze Product"):
     else:
         st.warning("Please enter a product ID.")
         
+# Worst product analysis area
+st.markdown("---")
+st.header("Analysis of Worst-Reviewed Products")
+st.markdown("##### View the worst-reviewed products and their key themes.")
+st.write("")
+
+# Show the 5 worst-reviewed products
+st.write("Worst-Reviewed Products:")
+st.write(worst_products.head())
+st.write("Key Themes for Worst-Reviewed Products:")
+st.write(worst_product_topics)
+
 # Report generation area (in progress)
 st.markdown("---")
 st.header("Report Generation")
-st.write("Generate a report for a specific product.")
+st.markdown("##### Generate a report for a specific product.")
 #st.button("Generate Report")
 
 if st.button("Generate Report"):
